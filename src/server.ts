@@ -8,6 +8,7 @@ import userRoutes from './api/routes/user.routes';
 import influencerRoutes from './api/routes/influencer.routes';
 import campaignRoutes from './api/routes/campaign.routes';
 import { errorHandler } from './middlewares/errorHandler.middleware';
+import routes from './api/routes/index';
 
 if (cluster.isPrimary) {
   const cpuCount = os.cpus().length;
@@ -26,6 +27,7 @@ if (cluster.isPrimary) {
   app.use('/api/v1/users', userRoutes);
   app.use('/api/v1/influencers', influencerRoutes);
   app.use('/api/v1/campaigns', campaignRoutes);
+  app.use('/api', routes);
 
   app.use(errorHandler);
 

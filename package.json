@@ -14,6 +14,7 @@
     "bullmq": "^3.16.2",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.3.2",
     "redis": "^4.6.7",
