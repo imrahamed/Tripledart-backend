@@ -1,0 +1,15 @@
+module.exports = [
+  { name: 'Authentication', description: 'User authentication and authorization' },
+  { name: 'Users', description: 'User account management' },
+  { name: 'Influencers', description: 'Influencer profile management and search' },
+  { name: 'Campaigns', description: 'Campaign creation, management, and tracking' },
+  { name: 'Analytics', description: 'Campaign performance analytics and reporting' },
+  { name: 'Content', description: 'Content creation, scheduling, and management' },
+  { name: 'ClientRelationships', description: 'Management of influencer-client relationships' },
+  { name: 'Revenue', description: 'Revenue tracking and financial reporting' },
+  { name: 'Phyllo', description: 'Phyllo integration for real-time influencer data' },
+  { name: 'Notifications', description: 'System notifications and alerts' },
+  { name: 'Settings', description: 'Platform and user settings management' },
+  { name: 'Reports', description: 'Generation and management of custom reports' },
+  { name: 'Integrations', description: 'Third-party platform integrations' },
+];

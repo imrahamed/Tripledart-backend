@@ -3,11 +3,11 @@ import bcrypt from 'bcrypt';
 
 export class UserService {
   static async createUser(data: Partial<IUser>) {
-    const hashed = await bcrypt.hash(data.password || '', 10);
     const user = new UserModel({
       email: data.email,
-      password: hashed,
-      role: data.role
+      password: data.password,
+      role: data.role,
+      name: data.name
     });
     return user.save();
   }
