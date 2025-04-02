@@ -1,1205 +1,2666 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-        "title": "Tripledart Influencer Marketing Platform API",
-        "version": "1.0.0",
-        "description": "API documentation for Tripledart Influencer Marketing Platform"
-    },
-    "servers": [
-        {
-            "url": "http://localhost:4000",
-            "description": "Development server"
-        }
-    ],
-    "tags": [
-        {
-            "name": "Authentication",
-            "description": "User authentication and authorization"
-        },
-        {
-            "name": "Users",
-            "description": "User account management"
-        },
-        {
-            "name": "Influencers",
-            "description": "Influencer profile management and search"
-        },
-        {
-            "name": "Campaigns",
-            "description": "Campaign creation, management, and tracking"
-        },
-        {
-            "name": "Analytics",
-            "description": "Campaign performance analytics and reporting"
-        },
-        {
-            "name": "Content",
-            "description": "Content creation, scheduling, and management"
-        },
-        {
-            "name": "ClientRelationships",
-            "description": "Management of influencer-client relationships"
-        },
-        {
-            "name": "Revenue",
-            "description": "Revenue tracking and financial reporting"
-        },
-        {
-            "name": "Phyllo",
-            "description": "Phyllo integration for real-time influencer data"
-        },
-        {
-            "name": "Notifications",
-            "description": "System notifications and alerts"
-        },
-        {
-            "name": "Settings",
-            "description": "Platform and user settings management"
-        },
-        {
-            "name": "Reports",
-            "description": "Generation and management of custom reports"
-        },
-        {
-            "name": "Integrations",
-            "description": "Third-party platform integrations"
-        }
-    ],
-    "paths": {
-        "/api/auth": {
-            "post": {
-                "summary": "Register a new user",
-                "tags": ["Authentication"],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UserRegistration"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "User registered successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/User"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/BadRequest"
-                    }
-                }
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Tripledart API Documentation",
+    "version": "1.0.0",
+    "description": "API documentation for the Tripledart platform"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/api/analytics/campaign/{campaignId}": {
+      "get": {
+        "summary": "Get campaign analytics",
+        "tags": [
+          "Analytics"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campaignId",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
-        },
-        "/api/auth/login": {
-            "post": {
-                "summary": "Authenticate user and get token",
-                "tags": ["Authentication"],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UserLogin"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Authentication successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthToken"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Unauthorized"
-                    }
-                }
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
             }
-        },
-        "/api/auth/request-reset": {
-            "post": {
-                "summary": "Request password reset",
-                "tags": ["Authentication"],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email"
-                                    }
-                                },
-                                "required": ["email"]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Password reset email sent",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
             }
-        },
-        "/api/auth/reset-password": {
-            "post": {
-                "summary": "Reset password",
-                "tags": ["Authentication"],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "token": {
-                                        "type": "string"
-                                    },
-                                    "newPassword": {
-                                        "type": "string",
-                                        "format": "password"
-                                    }
-                                },
-                                "required": ["token", "newPassword"]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Password reset successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign analytics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalReach": {
+                      "type": "number"
                     },
-                    "400": {
-                        "$ref": "#/components/responses/BadRequest"
-                    }
-                }
-            }
-        },
-        "/api/users": {
-            "get": {
-                "summary": "Get all users",
-                "tags": ["Users"],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "List of users",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/User"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/users/{userId}": {
-            "get": {
-                "summary": "Get user profile",
-                "tags": ["Users"],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "userId",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "User profile retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/User"
-                                }
-                            }
-                        }
+                    "totalEngagement": {
+                      "type": "number"
                     },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            },
-            "put": {
-                "summary": "Update user profile",
-                "tags": ["Users"],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "userId",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [{ "BearerAuth": [] }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UserUpdate"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "User profile updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/User"
-                                }
-                            }
-                        }
+                    "totalImpressions": {
+                      "type": "number"
                     },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/influencers": {
-            "get": {
-                "summary": "Search influencers",
-                "tags": ["Influencers"],
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "platform",
-                        "schema": {
-                            "type": "string"
-                        }
+                    "totalClicks": {
+                      "type": "number"
                     },
-                    {
-                        "in": "query",
-                        "name": "minFollowers",
-                        "schema": {
-                            "type": "integer"
-                        }
+                    "conversionRate": {
+                      "type": "number"
                     },
-                    {
-                        "in": "query",
-                        "name": "maxFollowers",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "List of influencers matching criteria",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Influencer"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "summary": "Create a new influencer",
-                "tags": ["Influencers"],
-                "security": [{ "BearerAuth": [] }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/InfluencerCreate"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Influencer created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Influencer"
-                                }
-                            }
-                        }
+                    "roi": {
+                      "type": "number"
                     },
-                    "400": {
-                        "$ref": "#/components/responses/BadRequest"
-                    }
-                }
-            }
-        },
-        "/api/influencers/{influencerId}": {
-            "get": {
-                "summary": "Get influencer details",
-                "tags": ["Influencers"],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "influencerId",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "Influencer details retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Influencer"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            },
-            "put": {
-                "summary": "Update influencer details",
-                "tags": ["Influencers"],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "influencerId",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [{ "BearerAuth": [] }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/InfluencerUpdate"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Influencer updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Influencer"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/campaigns": {
-            "post": {
-                "summary": "Create a new campaign",
-                "tags": ["Campaigns"],
-                "security": [{ "BearerAuth": [] }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CampaignCreate"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Campaign created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Campaign"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/BadRequest"
-                    }
-                }
-            },
-            "get": {
-                "summary": "Get all campaigns",
-                "tags": ["Campaigns"],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "List of campaigns",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Campaign"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/campaigns/{campaignId}": {
-            "get": {
-                "summary": "Get campaign details",
-                "tags": ["Campaigns"],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "campaignId",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "Campaign details retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Campaign"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            },
-            "put": {
-                "summary": "Update campaign details",
-                "tags": ["Campaigns"],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "campaignId",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [{ "BearerAuth": [] }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CampaignUpdate"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Campaign updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Campaign"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/analytics/campaign/{campaignId}": {
-            "get": {
-                "summary": "Get campaign analytics",
-                "tags": ["Analytics"],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "campaignId",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "Campaign analytics retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CampaignAnalytics"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/NotFound"
-                    }
-                }
-            }
-        },
-        "/api/content/calendar": {
-            "get": {
-                "summary": "Get content calendar",
-                "tags": ["Content"],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "Content calendar retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ContentCalendar"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/client-relationships": {
-            "post": {
-                "summary": "Create a new client relationship",
-                "tags": ["ClientRelationships"],
-                "security": [{ "BearerAuth": [] }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ClientRelationshipCreate"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Client relationship created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ClientRelationship"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/BadRequest"
-                    }
-                }
-            }
-        },
-        "/api/revenue/overview": {
-            "get": {
-                "summary": "Get revenue overview",
-                "tags": ["Revenue"],
-                "security": [{ "BearerAuth": [] }],
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "startDate",
-                        "schema": {
+                    "dailyStats": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
                             "type": "string",
                             "format": "date"
+                          },
+                          "reach": {
+                            "type": "number"
+                          },
+                          "engagement": {
+                            "type": "number"
+                          },
+                          "impressions": {
+                            "type": "number"
+                          },
+                          "clicks": {
+                            "type": "number"
+                          }
                         }
-                    },
-                    {
-                        "in": "query",
-                        "name": "endDate",
-                        "schema": {
-                            "type": "string",
-                            "format": "date"
-                        }
+                      }
                     }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Revenue overview retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/RevenueOverview"
-                                }
-                            }
-                        }
-                    }
+                  }
                 }
+              }
             }
-        },
-        "/api/revenue/entries": {
-            "post": {
-                "summary": "Add revenue entry",
-                "tags": ["Revenue"],
-                "security": [{ "BearerAuth": [] }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RevenueEntry"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Revenue entry added successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/RevenueEntry"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/BadRequest"
-                    }
-                }
-            }
-        },
-        "/api/notifications": {
-            "get": {
-                "summary": "Get user notifications",
-                "tags": ["Notifications"],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "List of notifications",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Notification"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/settings/profile": {
-            "put": {
-                "summary": "Update user profile settings",
-                "tags": ["Settings"],
-                "security": [{ "BearerAuth": [] }],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UserSettings"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Settings updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/UserSettings"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/integrations/phyllo": {
-            "post": {
-                "summary": "Connect Phyllo account",
-                "tags": ["Integrations"],
-                "security": [{ "BearerAuth": [] }],
-                "responses": {
-                    "200": {
-                        "description": "Phyllo integration successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reports/campaign-performance/{campaignId}": {
-            "get": {
-                "summary": "Generate campaign performance report",
-                "tags": ["Reports"],
-                "security": [{ "BearerAuth": [] }],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "campaignId",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "PDF report generated successfully",
-                        "content": {
-                            "application/pdf": {
-                                "schema": {
-                                    "type": "string",
-                                    "format": "binary"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+          },
+          "500": {
+            "description": "Error fetching campaign analytics"
+          }
         }
+      }
     },
-    "components": {
-        "schemas": {
-            "UserRegistration": {
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
                 "type": "object",
-                "required": ["email", "password", "role"],
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ],
                 "properties": {
-                    "name": { "type": "string" },
-                    "email": { "type": "string", "format": "email" },
-                    "password": { "type": "string", "format": "password" },
-                    "role": {
-                        "type": "string",
-                        "enum": ["admin", "brand", "influencer"]
-                    }
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
                 }
-            },
-            "UserLogin": {
-                "type": "object",
-                "required": ["email", "password"],
-                "properties": {
-                    "email": { "type": "string", "format": "email" },
-                    "password": { "type": "string", "format": "password" }
-                }
-            },
-            "AuthToken": {
-                "type": "object",
-                "properties": {
-                    "token": { "type": "string" },
-                    "expiresIn": { "type": "integer" }
-                }
-            },
-            "UserUpdate": {
-                "type": "object",
-                "properties": {
-                    "name": { "type": "string" },
-                    "password": { "type": "string", "format": "password" }
-                }
-            },
-            "InfluencerCreate": {
-                "type": "object",
-                "required": ["name", "socialAccounts"],
-                "properties": {
-                    "name": { "type": "string" },
-                    "socialAccounts": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "platform": { "type": "string" },
-                                "username": { "type": "string" },
-                                "followers": { "type": "integer" },
-                                "engagementRate": { "type": "number" }
-                            }
-                        }
-                    }
-                }
-            },
-            "InfluencerUpdate": {
-                "type": "object",
-                "properties": {
-                    "name": { "type": "string" },
-                    "socialAccounts": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "platform": { "type": "string" },
-                                "username": { "type": "string" },
-                                "followers": { "type": "integer" },
-                                "engagementRate": { "type": "number" }
-                            }
-                        }
-                    }
-                }
-            },
-            "CampaignCreate": {
-                "type": "object",
-                "required": ["name", "brandId", "budget"],
-                "properties": {
-                    "name": { "type": "string" },
-                    "brandId": { "type": "string" },
-                    "influencers": {
-                        "type": "array",
-                        "items": { "type": "string" }
-                    },
-                    "budget": { "type": "number" },
-                    "status": {
-                        "type": "string",
-                        "enum": ["draft", "active", "completed"],
-                        "default": "draft"
-                    }
-                }
-            },
-            "CampaignUpdate": {
-                "type": "object",
-                "properties": {
-                    "name": { "type": "string" },
-                    "influencers": {
-                        "type": "array",
-                        "items": { "type": "string" }
-                    },
-                    "budget": { "type": "number" },
-                    "status": {
-                        "type": "string",
-                        "enum": ["draft", "active", "completed"]
-                    }
-                }
-            },
-            "ContentCalendar": {
-                "type": "object",
-                "properties": {
-                    "entries": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "date": { "type": "string", "format": "date" },
-                                "platform": { "type": "string" },
-                                "content": { "type": "string" },
-                                "status": {
-                                    "type": "string",
-                                    "enum": ["draft", "scheduled", "published"]
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ClientRelationshipCreate": {
-                "type": "object",
-                "required": ["influencerId", "clientId"],
-                "properties": {
-                    "influencerId": { "type": "string" },
-                    "clientId": { "type": "string" },
-                    "status": {
-                        "type": "string",
-                        "enum": ["active", "past", "potential"]
-                    }
-                }
-            },
-            "RevenueOverview": {
-                "type": "object",
-                "properties": {
-                    "totalRevenue": { "type": "number" },
-                    "monthlyTrend": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "month": { "type": "string" },
-                                "amount": { "type": "number" }
-                            }
-                        }
-                    },
-                    "pendingPayments": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "amount": { "type": "number" },
-                                "dueDate": { "type": "string", "format": "date" }
-                            }
-                        }
-                    }
-                }
-            },
-            "Notification": {
-                "type": "object",
-                "properties": {
-                    "type": { "type": "string" },
-                    "message": { "type": "string" },
-                    "timestamp": { "type": "string", "format": "date-time" }
-                }
-            },
-            "UserSettings": {
-                "type": "object",
-                "properties": {
-                    "notificationsEnabled": { "type": "boolean" },
-                    "preferredCurrency": { "type": "string" }
-                }
-            },
-            "User": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string",
-                        "format": "email"
-                    },
-                    "role": {
-                        "type": "string",
-                        "enum": ["admin", "brand", "influencer"]
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
-            },
-            "Influencer": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "socialAccounts": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "platform": {
-                                    "type": "string"
-                                },
-                                "username": {
-                                    "type": "string"
-                                },
-                                "followers": {
-                                    "type": "integer"
-                                },
-                                "engagementRate": {
-                                    "type": "number"
-                                }
-                            }
-                        }
-                    },
-                    "phylloId": {
-                        "type": "string"
-                    }
-                }
-            },
-            "Campaign": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "budget": {
-                        "type": "number"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": ["draft", "active", "completed"]
-                    },
-                    "startDate": {
-                        "type": "string",
-                        "format": "date"
-                    },
-                    "endDate": {
-                        "type": "string",
-                        "format": "date"
-                    }
-                }
-            },
-            "CampaignAnalytics": {
-                "type": "object",
-                "properties": {
-                    "impressions": {
-                        "type": "integer"
-                    },
-                    "engagement": {
-                        "type": "number"
-                    },
-                    "clicks": {
-                        "type": "integer"
-                    },
-                    "conversions": {
-                        "type": "integer"
-                    }
-                }
-            },
-            "ClientRelationship": {
-                "type": "object",
-                "properties": {
-                    "influencerId": {
-                        "type": "string"
-                    },
-                    "clientId": {
-                        "type": "string"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": ["active", "past", "potential"]
-                    }
-                }
-            },
-            "RevenueEntry": {
-                "type": "object",
-                "properties": {
-                    "campaignId": {
-                        "type": "string"
-                    },
-                    "amount": {
-                        "type": "number"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": ["pending", "paid"]
-                    }
-                }
-            },
-            "Error": {
-                "type": "object",
-                "properties": {
-                    "statusCode": {
-                        "type": "integer"
-                    },
-                    "message": {
-                        "type": "string"
-                    }
-                }
+              }
             }
-        },
-        "securitySchemes": {
-            "BearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "JWT"
-            }
+          }
         },
         "responses": {
-            "BadRequest": {
-                "description": "Bad request",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Error"
-                        }
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
                     }
+                  }
                 }
-            },
-            "Unauthorized": {
-                "description": "Unauthorized",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                }
-            },
-            "NotFound": {
-                "description": "Resource not found",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                }
+              }
             }
+          },
+          "400": {
+            "description": "User already exists or invalid user data"
+          }
         }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid email or password"
+          }
+        }
+      }
+    },
+    "/api/auth/request-password-reset": {
+      "post": {
+        "summary": "Request password reset",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset link sent"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "summary": "Reset password using token",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token",
+                  "userId",
+                  "password"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  },
+                  "userId": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          },
+          "400": {
+            "description": "Invalid or expired token"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/auth/change-password": {
+      "post": {
+        "summary": "Change password for authenticated user",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "currentPassword",
+                  "newPassword"
+                ],
+                "properties": {
+                  "currentPassword": {
+                    "type": "string",
+                    "format": "password"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully"
+          },
+          "401": {
+            "description": "Invalid current password"
+          }
+        }
+      }
+    },
+    "/api/auth/refresh-token": {
+      "post": {
+        "summary": "Refresh authentication token",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "refreshToken"
+                ],
+                "properties": {
+                  "refreshToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid refresh token"
+          }
+        }
+      }
+    },
+    "/api/campaigns": {
+      "post": {
+        "summary": "Create a new campaign",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "description",
+                  "startDate",
+                  "endDate"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "budget": {
+                    "type": "number"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "active",
+                      "completed",
+                      "cancelled"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Campaign created successfully"
+          },
+          "500": {
+            "description": "Error creating campaign"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all campaigns",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaigns retrieved successfully"
+          },
+          "500": {
+            "description": "Error fetching campaigns"
+          }
+        }
+      }
+    },
+    "/api/campaigns/{id}": {
+      "get": {
+        "summary": "Get campaign by ID",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign retrieved successfully"
+          },
+          "404": {
+            "description": "Campaign not found"
+          },
+          "500": {
+            "description": "Error fetching campaign"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update campaign details",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "budget": {
+                    "type": "number"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "active",
+                      "completed",
+                      "cancelled"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Campaign updated successfully"
+          },
+          "404": {
+            "description": "Campaign not found"
+          },
+          "500": {
+            "description": "Error updating campaign"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a campaign",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign deleted successfully"
+          },
+          "404": {
+            "description": "Campaign not found"
+          },
+          "500": {
+            "description": "Error deleting campaign"
+          }
+        }
+      }
+    },
+    "/api/client-relationships": {
+      "post": {
+        "summary": "Create a new client relationship",
+        "tags": [
+          "Client Relationships"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "influencerId",
+                  "clientId",
+                  "status"
+                ],
+                "properties": {
+                  "influencerId": {
+                    "type": "string"
+                  },
+                  "clientId": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "inactive",
+                      "pending"
+                    ]
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "notes": {
+                    "type": "string"
+                  },
+                  "contractDetails": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Client relationship created successfully"
+          },
+          "500": {
+            "description": "Error creating client relationship"
+          }
+        }
+      }
+    },
+    "/api/client-relationships/influencer/{influencerId}": {
+      "get": {
+        "summary": "Get all client relationships for an influencer",
+        "tags": [
+          "Client Relationships"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "influencerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client relationships retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "influencerId": {
+                        "type": "string"
+                      },
+                      "clientId": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "active",
+                          "inactive",
+                          "pending"
+                        ]
+                      },
+                      "startDate": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "endDate": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "notes": {
+                        "type": "string"
+                      },
+                      "contractDetails": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching client relationships"
+          }
+        }
+      }
+    },
+    "/api/client-relationships/{id}": {
+      "put": {
+        "summary": "Update client relationship",
+        "tags": [
+          "Client Relationships"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "inactive",
+                      "pending"
+                    ]
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "notes": {
+                    "type": "string"
+                  },
+                  "contractDetails": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Client relationship updated successfully"
+          },
+          "404": {
+            "description": "Client relationship not found"
+          },
+          "500": {
+            "description": "Error updating client relationship"
+          }
+        }
+      }
+    },
+    "/api/content/calendar/{campaignId}": {
+      "get": {
+        "summary": "Get content calendar for a campaign",
+        "tags": [
+          "Content"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campaignId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Content calendar retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contentItems": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "scheduledDate": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "draft",
+                              "scheduled",
+                              "published",
+                              "archived"
+                            ]
+                          },
+                          "platform": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "post",
+                              "story",
+                              "reel",
+                              "video"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching content calendar"
+          }
+        }
+      }
+    },
+    "/api/content": {
+      "post": {
+        "summary": "Create new content",
+        "tags": [
+          "Content"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "campaignId",
+                  "platform",
+                  "type"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "campaignId": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "post",
+                      "story",
+                      "reel",
+                      "video"
+                    ]
+                  },
+                  "scheduledDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "mediaUrls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "hashtags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Content created successfully"
+          },
+          "500": {
+            "description": "Error creating content"
+          }
+        }
+      }
+    },
+    "/api/content/{id}": {
+      "put": {
+        "summary": "Update content",
+        "tags": [
+          "Content"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "post",
+                      "story",
+                      "reel",
+                      "video"
+                    ]
+                  },
+                  "scheduledDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "mediaUrls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "hashtags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "scheduled",
+                      "published",
+                      "archived"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Content updated successfully"
+          },
+          "404": {
+            "description": "Content not found"
+          },
+          "500": {
+            "description": "Error updating content"
+          }
+        }
+      }
+    },
+    "/api/influencers": {
+      "post": {
+        "summary": "Create a new influencer",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "socialMedia": {
+                    "type": "object"
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Influencer created successfully"
+          },
+          "500": {
+            "description": "Error creating influencer"
+          }
+        }
+      }
+    },
+    "/api/influencers/{id}": {
+      "get": {
+        "summary": "Get influencer by ID",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Influencer retrieved successfully"
+          },
+          "404": {
+            "description": "Influencer not found"
+          },
+          "500": {
+            "description": "Error fetching influencer"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update influencer details",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "socialMedia": {
+                    "type": "object"
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Influencer updated successfully"
+          },
+          "404": {
+            "description": "Influencer not found"
+          },
+          "500": {
+            "description": "Error updating influencer"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an influencer",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Influencer deleted successfully"
+          },
+          "404": {
+            "description": "Influencer not found"
+          },
+          "500": {
+            "description": "Error deleting influencer"
+          }
+        }
+      }
+    },
+    "/api/influencers/search": {
+      "get": {
+        "summary": "Search influencers",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "platform",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "followers",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Search results retrieved successfully"
+          },
+          "500": {
+            "description": "Error searching influencers"
+          }
+        }
+      }
+    },
+    "/api/influencers/{id}/sync-phyllo": {
+      "post": {
+        "summary": "Sync influencer data with Phyllo",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Sync completed successfully"
+          },
+          "404": {
+            "description": "Could not sync influencer with Phyllo"
+          },
+          "500": {
+            "description": "Error syncing with Phyllo"
+          }
+        }
+      }
+    },
+    "/api/influencers/{id}/analytics": {
+      "get": {
+        "summary": "Get influencer analytics",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Analytics retrieved successfully"
+          },
+          "404": {
+            "description": "Analytics not found"
+          },
+          "500": {
+            "description": "Error fetching analytics"
+          }
+        }
+      }
+    },
+    "/api/influencers/{id}/verify": {
+      "post": {
+        "summary": "Verify an influencer",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Influencer verified successfully"
+          },
+          "404": {
+            "description": "Could not verify influencer"
+          },
+          "500": {
+            "description": "Error verifying influencer"
+          }
+        }
+      }
+    },
+    "/api/influencers/{id}/phyllo-data": {
+      "get": {
+        "summary": "Get influencer's Phyllo data",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Phyllo data retrieved successfully"
+          },
+          "404": {
+            "description": "Phyllo data not found"
+          },
+          "500": {
+            "description": "Error fetching Phyllo data"
+          }
+        }
+      }
+    },
+    "/api/influencers/categories": {
+      "get": {
+        "summary": "Get all influencer categories",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Categories retrieved successfully"
+          },
+          "500": {
+            "description": "Error fetching categories"
+          }
+        }
+      }
+    },
+    "/api/influencers/platforms": {
+      "get": {
+        "summary": "Get all influencer platforms",
+        "tags": [
+          "Influencers"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Platforms retrieved successfully"
+          },
+          "500": {
+            "description": "Error fetching platforms"
+          }
+        }
+      }
+    },
+    "/api/insightiq/sync": {
+      "post": {
+        "summary": "Trigger a sync job with search parameters",
+        "tags": [
+          "InsightIQ"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "searchParams"
+                ],
+                "properties": {
+                  "searchParams": {
+                    "type": "object",
+                    "properties": {
+                      "keywords": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "platforms": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "categories": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "locations": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "followers": {
+                        "type": "object",
+                        "properties": {
+                          "min": {
+                            "type": "number"
+                          },
+                          "max": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "engagement": {
+                        "type": "object",
+                        "properties": {
+                          "min": {
+                            "type": "number"
+                          },
+                          "max": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sync job scheduled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Sync job scheduled successfully"
+                    },
+                    "jobId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Search parameters are required"
+          },
+          "500": {
+            "description": "Failed to schedule sync job"
+          }
+        }
+      }
+    },
+    "/api/insightiq/sync/profile/{profileId}": {
+      "post": {
+        "summary": "Trigger a sync job for a specific profile",
+        "tags": [
+          "InsightIQ"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profileId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile sync job scheduled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Profile sync job scheduled successfully"
+                    },
+                    "jobId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Profile ID is required"
+          },
+          "500": {
+            "description": "Failed to schedule profile sync job"
+          }
+        }
+      }
+    },
+    "/api/insightiq/sync/recurring": {
+      "post": {
+        "summary": "Schedule a recurring sync job",
+        "tags": [
+          "InsightIQ"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "searchParams",
+                  "cronSchedule"
+                ],
+                "properties": {
+                  "searchParams": {
+                    "type": "object",
+                    "properties": {
+                      "keywords": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "platforms": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "categories": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "locations": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "followers": {
+                        "type": "object",
+                        "properties": {
+                          "min": {
+                            "type": "number"
+                          },
+                          "max": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "engagement": {
+                        "type": "object",
+                        "properties": {
+                          "min": {
+                            "type": "number"
+                          },
+                          "max": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "cronSchedule": {
+                    "type": "string",
+                    "description": "Cron expression for scheduling"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recurring sync job scheduled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Recurring sync job scheduled successfully"
+                    },
+                    "jobId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Search parameters and cron schedule are required"
+          },
+          "500": {
+            "description": "Failed to schedule recurring sync job"
+          }
+        }
+      }
+    },
+    "/api/insightiq/jobs": {
+      "get": {
+        "summary": "Get all active sync jobs",
+        "tags": [
+          "InsightIQ"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync jobs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "jobs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "data": {
+                            "type": "object"
+                          },
+                          "timestamp": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to get sync jobs"
+          }
+        }
+      }
+    },
+    "/api/insightiq/jobs/{jobId}": {
+      "get": {
+        "summary": "Get a specific job by ID",
+        "tags": [
+          "InsightIQ"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "job": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "data": {
+                          "type": "object"
+                        },
+                        "timestamp": {
+                          "type": "number"
+                        },
+                        "returnvalue": {
+                          "type": "object"
+                        },
+                        "failedReason": {
+                          "type": "string"
+                        },
+                        "stacktrace": {
+                          "type": "string"
+                        },
+                        "opts": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Job ID is required"
+          },
+          "404": {
+            "description": "Job not found"
+          },
+          "500": {
+            "description": "Failed to get job"
+          }
+        }
+      }
+    },
+    "/api/platform-settings/sync-platforms": {
+      "post": {
+        "summary": "Sync platforms from InsightIQ",
+        "tags": [
+          "Platform Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Platforms synced successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Platforms synced successfully"
+                    },
+                    "platforms": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "isActive": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to sync platforms"
+          }
+        }
+      }
+    },
+    "/api/platform-settings/sync-topics": {
+      "post": {
+        "summary": "Sync topics from InsightIQ",
+        "tags": [
+          "Platform Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Topics synced successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Topics synced successfully"
+                    },
+                    "topics": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "isActive": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to sync topics"
+          }
+        }
+      }
+    },
+    "/api/platform-settings/sync-locations": {
+      "post": {
+        "summary": "Sync locations from InsightIQ",
+        "tags": [
+          "Platform Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Locations synced successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Locations synced successfully"
+                    },
+                    "locations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "parentCode": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "isActive": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to sync locations"
+          }
+        }
+      }
+    },
+    "/api/platform-settings": {
+      "get": {
+        "summary": "Get current platform settings",
+        "tags": [
+          "Platform Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Platform settings retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "settings": {
+                      "type": "object",
+                      "properties": {
+                        "platforms": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "topics": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "locations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "lastSync": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedBy": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "email": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid token"
+          },
+          "404": {
+            "description": "No platform settings found"
+          }
+        }
+      }
+    },
+    "/api/platform-settings/status": {
+      "put": {
+        "summary": "Update platform, topic, or location status",
+        "tags": [
+          "Platform Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "code",
+                  "isActive"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "platforms",
+                      "topics",
+                      "locations"
+                    ]
+                  },
+                  "code": {
+                    "type": "string"
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Platform status updated successfully"
+                    },
+                    "platforms": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Platform settings or item not found"
+          },
+          "500": {
+            "description": "Failed to update status"
+          }
+        }
+      }
+    },
+    "/api/revenue/overview": {
+      "get": {
+        "summary": "Get revenue overview",
+        "tags": [
+          "Revenue"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Revenue overview retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalRevenue": {
+                      "type": "number"
+                    },
+                    "revenueBySource": {
+                      "type": "object",
+                      "properties": {
+                        "campaigns": {
+                          "type": "number"
+                        },
+                        "sponsorships": {
+                          "type": "number"
+                        },
+                        "other": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "revenueByPeriod": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "period": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching revenue overview"
+          }
+        }
+      }
+    },
+    "/api/revenue": {
+      "post": {
+        "summary": "Add new revenue entry",
+        "tags": [
+          "Revenue"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "amount",
+                  "source",
+                  "date"
+                ],
+                "properties": {
+                  "amount": {
+                    "type": "number"
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "campaign",
+                      "sponsorship",
+                      "other"
+                    ]
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "campaignId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Revenue entry added successfully"
+          },
+          "500": {
+            "description": "Error adding revenue"
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "post": {
+        "summary": "Create a new user",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "role"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "admin",
+                      "manager",
+                      "user"
+                    ]
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "company": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "500": {
+            "description": "Error creating user"
+          }
+        }
+      },
+      "get": {
+        "summary": "List all users",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully"
+          },
+          "500": {
+            "description": "Error listing users"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User retrieved successfully"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Error fetching user"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update user details",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "admin",
+                      "manager",
+                      "user"
+                    ]
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "company": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Error updating user"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Error deleting user"
+          }
+        }
+      }
     }
+  },
+  "tags": [
+    {
+      "name": "Analytics",
+      "description": "API endpoints for analytics and reporting"
+    },
+    {
+      "name": "Authentication",
+      "description": "API endpoints for user authentication and authorization"
+    },
+    {
+      "name": "Campaigns",
+      "description": "API endpoints for managing campaigns"
+    },
+    {
+      "name": "Client Relationships",
+      "description": "API endpoints for managing client-influencer relationships"
+    },
+    {
+      "name": "Content",
+      "description": "API endpoints for managing content and content calendar"
+    },
+    {
+      "name": "Influencers",
+      "description": "API endpoints for managing influencers"
+    },
+    {
+      "name": "InsightIQ",
+      "description": "API endpoints for managing InsightIQ sync operations"
+    },
+    {
+      "name": "Platform Settings",
+      "description": "API endpoints for managing platform settings"
+    },
+    {
+      "name": "Revenue",
+      "description": "API endpoints for managing revenue and financial data"
+    },
+    {
+      "name": "Users",
+      "description": "API endpoints for managing users"
+    }
+  ]
 }

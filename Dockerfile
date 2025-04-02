@@ -10,6 +10,6 @@ COPY src/ ./src
 
 RUN npm run build
 
-EXPOSE 4000
+EXPOSE 3000
 
 CMD ["npm", "start"]

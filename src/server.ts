@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cluster from 'cluster';
 import os from 'os';
 import { connectDatabase } from './config/database';
@@ -10,6 +10,7 @@ import routes from './api/routes/index';
 import * as swaggerDocument from './swagger/routes.json';
 import cors from 'cors';
 import dotenv from "dotenv";
+import { initializeInsightIQSync } from './jobs/insightiqSync.job';
 dotenv.config();
 
 const app = express();
@@ -20,11 +21,18 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/api', routes);
 
-app.use(errorHandler);
+// Error handling middleware must be used last
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  errorHandler(err, req, res, next);
+});
 
 const startServer = async () => {
   await connectDatabase();
   await redisClient.connect();
+  
+  // Initialize jobs
+  await initializeInsightIQSync();
+  
   app.listen(ENV.PORT, () => {
     console.log(`✅ Worker ${process.pid} running on port ${ENV.PORT}`);
   });

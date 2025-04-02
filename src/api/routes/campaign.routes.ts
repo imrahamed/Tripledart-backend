@@ -5,7 +5,7 @@ import { authorize } from '../../middlewares/authorize.middleware';
 
 const router = Router();
 
-router.post('/', authenticate, authorize(['brand']), CampaignController.createCampaign);
+router.post('/', authenticate, authorize(["admin",'brand']), CampaignController.createCampaign);
 router.get('/', authenticate, authorize(['admin', 'brand']), CampaignController.getAllCampaigns);
 router.get('/:id', authenticate, CampaignController.getCampaign);
 router.put('/:id', authenticate, authorize(['brand']), CampaignController.updateCampaign);

@@ -1,32 +1,49 @@
+import fs from 'fs';
+import path from 'path';
+import swaggerJsdoc from 'swagger-jsdoc';
 
-import * as fs from 'fs';
-import * as path from 'path';
-import 'reflect-metadata';
+// Import all swagger documentation files
+import '../swagger/auth.swagger';
+import '../swagger/influencer.swagger';
+import '../swagger/campaign.swagger';
+import '../swagger/analytics.swagger';
+import '../swagger/user.swagger';
+import '../swagger/revenue.swagger';
+import '../swagger/content.swagger';
+import '../swagger/clientRelationship.swagger';
+import '../swagger/insightiq.swagger';
 
-function generateSwaggerDocs() {
-  const controllersPath = path.join(__dirname, '../api/controllers');
-  const files = fs.readdirSync(controllersPath);
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Tripledart API Documentation',
+      version: '1.0.0',
+      description: 'API documentation for the Tripledart platform',
+    },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+        description: 'Development server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+  },
+  apis: ['./src/swagger/*.ts'], // Path to the swagger documentation files
+};
 
-  const swaggerDocs = {};
+const swaggerSpec = swaggerJsdoc(options);
 
-  files.forEach((file) => {
-    if (file.endsWith('.controller.ts')) {
-      const controllerPath = path.join(controllersPath, file);
-      const controller = require(controllerPath);
-      const instance = new controller[Object.keys(controller)[0]]();
-      console.log(JSON.stringify(controller, null, 2));
-      const docs = Reflect.getMetadata('swaggerDocs', instance.constructor);
-      console.log(docs)
-      if (docs) {
-        Object.assign(swaggerDocs, docs);
-      }
-    }
-  });
+// Write the swagger spec to a JSON file
+const outputPath = path.join(__dirname, '../swagger/routes.json');
+fs.writeFileSync(outputPath, JSON.stringify(swaggerSpec, null, 2));
 
-  fs.writeFileSync(
-    path.join(__dirname, '../swagger/routes.json'),
-    JSON.stringify(swaggerDocs, null, 2)
-  );
-}
-
-generateSwaggerDocs();
+console.log('✅ Swagger documentation generated successfully!');

@@ -1,7 +1,7 @@
 
 module.exports = [
   {
-    url: 'http://localhost:4000',
+    url: 'http://localhost:3000',
     description: 'Development server',
   },
 ];

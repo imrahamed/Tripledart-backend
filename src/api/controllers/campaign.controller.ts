@@ -7,6 +7,8 @@ export class CampaignController {
             const campaign = await CampaignService.createCampaign(req.body);
             res.status(201).json(campaign);
         } catch (err) {
+            console.error(err);
+            
             res.status(500).json({ message: "Error creating campaign" });
         }
     }

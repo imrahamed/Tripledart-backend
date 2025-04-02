@@ -1,14 +1,19 @@
 import { SwaggerDocs } from '../../decorators/swagger.decorator';
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { UserModel } from "../../core/models/user.model";
+import { IUser, UserModel } from "../../core/models/user.model";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { TokenModel } from "../../core/models/token";
 import sendEmail from "../../utils/sendEmail";
 
-const generateToken = (id: string) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET || "", { expiresIn: "30d" });
+const generateToken = (user: IUser) => {
+    return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET || "", { expiresIn: "30d" });
+};
+
+// Add this new function for refresh tokens
+const generateRefreshToken = (id: string) => {
+    return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET || "", { expiresIn: "1d" });
 };
 
 export class AuthController {
@@ -82,7 +87,7 @@ export class AuthController {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                token: generateToken(user._id),
+                token: generateToken(user),
             });
         } else {
             res.status(400).json({ message: "Invalid user data" });
@@ -154,7 +159,7 @@ export class AuthController {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                token: generateToken(user._id),
+                token: generateToken(user),
             });
         } else {
             res.status(401).json({ message: "Invalid email or password" });
@@ -404,5 +409,82 @@ export class AuthController {
         await user.save();
 
         res.json({ message: "Password changed successfully" });
+    }
+
+    @SwaggerDocs({
+        '/api/auth/refresh': {
+            post: {
+                summary: 'Refresh access token',
+                tags: ['Authentication'],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                required: ['refreshToken'],
+                                properties: {
+                                    refreshToken: { type: 'string' }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    200: {
+                        description: 'New access token generated',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        token: { type: 'string' }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    401: {
+                        description: 'Invalid refresh token',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        message: { type: 'string' }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
+    static async refreshToken(req: Request, res: Response) {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(401).json({ message: "Refresh token is required" });
+        }
+
+        try {
+            // Use JWT_REFRESH_SECRET instead of JWT_SECRET for verifying refresh tokens
+            const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || "") as { id: string };
+            const user = await UserModel.findById(decoded.id);
+
+            if (!user) {
+                return res.status(401).json({ message: "Invalid refresh token" });
+            }
+
+            // Generate new access token
+            const newToken = generateToken(user);
+            
+            res.json({
+                token: newToken
+            });
+        } catch (error) {
+            res.status(401).json({ message: "Invalid refresh token" });
+        }
     }
 }
